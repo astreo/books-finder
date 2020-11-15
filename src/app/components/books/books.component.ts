@@ -1,22 +1,16 @@
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { filter, map, switchMap } from 'rxjs/operators';
 import { BooksService } from '../../services/books.service';
-import { BookItem } from '../../models/books';
+import { BookItem, ItemVM } from '../../models/books';
 
 //
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { BookService } from 'src/app/services/book.service';
+import { BookQuery } from '../../store/book.query';
 //
-
-declare interface ItemVM {
-  id: string;
-  title: string;
-  author: string;
-}
-
-const ELEMENT_DATA: ItemVM[] = null;
 
 @Component({
   selector: 'app-books',
@@ -37,12 +31,26 @@ export class BooksComponent implements OnInit, AfterViewInit {
   subscription = new Subscription();
 
   mainSearchText = '';
+  mainSearchTextPrev = '';
 
-  constructor(private booksService: BooksService) {
+  //
+  listBooksSub: Subscription;
+  books$: Observable<ItemVM[]> = this.bookQuery.selectAll();
+  //
+
+  constructor(private bookService: BookService, private bookQuery: BookQuery) {
     // this.dataSource = new MatTableDataSource(this.bookItems);
   }
 
   ngOnInit(): void {
+    this.books$.subscribe(
+      result => {
+        console.log('cambia');
+        this.dataSource.data = result;
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      }
+    );
     // this.dataSource.sort = this.sort;
     // this.getList();
   }
@@ -63,31 +71,19 @@ export class BooksComponent implements OnInit, AfterViewInit {
   }
 
   getList(mainSearchText: string): void {
-    console.log('entro');
-    this.loading = true;
-    this.subscription = this.booksService.getItems(mainSearchText)
-    .pipe(map((items: BookItem[]) => items.map(item => {
-      {
-        return {
-          id: item.id,
-          title: item.volumeInfo.title,
-          author: item.volumeInfo.authors[0]
-        };
-      }
-    }))).subscribe(
-      result => {
-        // if (permisos.length === 0) return;
-
-        this.bookItems = result;
-        console.log('reducido:', this.bookItems);
-        this.loading = false;
-        // this.dataSource = new MatTableDataSource(this.bookItems);
-        this.dataSource.data = this.bookItems;
-        this.dataSource.sort = this.sort;
-        this.dataSource.paginator = this.paginator;
-      },
-      (/*error*/) => { }
-    );
+    this.listBooksSub = this.bookQuery.selectAreBooksLoaded$.pipe(
+      switchMap(areBooksLoaded => {
+        console.log('mainSearchText', this.mainSearchText);
+        console.log('mainSearchTextPrev', this.mainSearchTextPrev);
+        console.log('areBooksLoaded', areBooksLoaded);
+        console.log('restultado if: ', ((!areBooksLoaded) || (this.mainSearchText !== this.mainSearchTextPrev)));
+        if ((!areBooksLoaded) || (this.mainSearchText !== this.mainSearchTextPrev)) {
+          console.log('apretando getlist');
+          this.mainSearchTextPrev = this.mainSearchText;
+          return this.bookService.getBooks(mainSearchText);
+        }
+      })
+    ).subscribe(result => {});
   }
 
 }

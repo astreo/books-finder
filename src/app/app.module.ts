@@ -7,6 +7,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './material.module';
+import { BookService } from './services/book.service';
 
 
 @NgModule({
@@ -22,7 +23,7 @@ import { MaterialModule } from './material.module';
     ReactiveFormsModule,
     MaterialModule
   ],
-  providers: [],
+  providers: [BookService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
