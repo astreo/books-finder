@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-// import { BookStore, BookState } from './book.store';
 import { QueryEntity } from '@datorama/akita';
 import { BookState, BookStore } from './book.store';
 

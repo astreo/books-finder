@@ -24,7 +24,6 @@ export class BookStore extends EntityStore<BookState> {
 
     // tslint:disable-next-line: typedef
     loadBooks(books: ItemVM[], areBooksLoaded: boolean) {
-      console.log('objeto en loadbooks', books);
       this.set(books);
       this.update(state => ({
         ...state,

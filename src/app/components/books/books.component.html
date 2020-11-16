@@ -1,5 +1,5 @@
 <div class="container">
-  <div>
+  <div style="width: 900px; margin-top: 50px;">
     <div fxLayout="row">
       <mat-card class="search-card">
         <mat-card-header>
@@ -16,7 +16,7 @@
               <mat-icon>close</mat-icon>
             </button>
           </mat-form-field>
-          <button mat-button (click)="getList(mainSearchText)">SEARCH</button>
+          <button style="margin-left: 10px;" mat-button (click)="getList(mainSearchText)">SEARCH</button>
         </mat-card-content>
 
       </mat-card>
@@ -27,6 +27,8 @@
         <mat-form-field>
           <mat-label>Filter</mat-label>
           <input matInput (keyup)="applyFilter($event)" #input>
+          <button mat-button matSuffix mat-icon-button aria-label="Clear" (click)="input.value=''"><mat-icon>close</mat-icon>
+          </button>
         </mat-form-field>
 
         <div class="mat-elevation-z8">
@@ -35,32 +37,28 @@
 
             <!-- ID Column -->
             <ng-container matColumnDef="id">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+              <th class="w-sm" mat-header-cell *matHeaderCellDef> ID </th>
               <td mat-cell *matCellDef="let row"> {{row.id}} </td>
             </ng-container>
 
             <!-- Name Column -->
             <ng-container matColumnDef="title">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> title </th>
+              <th class="w-lg" mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
               <td mat-cell *matCellDef="let row"> {{row.title}} </td>
             </ng-container>
 
             <!-- Author Column -->
             <ng-container matColumnDef="author">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Author </th>
+              <th class="w-md" mat-header-cell *matHeaderCellDef mat-sort-header> Author </th>
               <td mat-cell *matCellDef="let row"> {{row.author}} </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
-            <!-- Row shown when there is no matching data. -->
-            <tr class="mat-row" *matNoDataRow>
-              <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
-            </tr>
           </table>
 
-          <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+          <mat-paginator pageSize="5"></mat-paginator>
         </div>
       </mat-card>
     </div>
